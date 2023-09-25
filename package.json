@@ -1,0 +1,26 @@
+{
+  "scripts": {
+    "clean": "rm -rf dist",
+    "format:fix": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint:fix": "eslint --fix .",
+    "lint:check": "eslint .",
+    "build": "npm run clean && npm run format:check && npm run lint:check && tsc",
+    "start": "node dist"
+  },
+  "devDependencies": {
+    "@types/node": "^20.6.5",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "dotenv-extended": "^2.9.0",
+    "pg": "^8.11.3",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.3.17"
+  }
+}
