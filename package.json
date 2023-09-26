@@ -1,12 +1,19 @@
 {
   "scripts": {
     "clean": "rm -rf dist",
+    "build:only": "npm run clean && tsc",
+    "migration:generate": "npm run build:only && typeorm migration:generate -d ./dist/infra/db.js ./src/migrations/Migration",
+    "migration:run": "npm run build:only && typeorm migration:run -d ./dist/infra/db.js",
+    "migration:check": "npm run migration:generate -- --check",
     "format:fix": "prettier --write .",
     "format:check": "prettier --check .",
     "lint:fix": "eslint --fix .",
     "lint:check": "eslint .",
-    "build": "npm run clean && npm run format:check && npm run lint:check && tsc",
-    "start": "node dist"
+    "build": "npm run clean && npm run migration:check && npm run format:check && npm run lint:check && npm run build:only",
+    "start:only": "node dist",
+    "start": "npm run build && npm run start:only",
+    "test:only": "curl -sSf http://localhost:8000",
+    "test": "start-server-and-test start 8000 test:only"
   },
   "devDependencies": {
     "@types/node": "^20.7.0",
@@ -15,10 +22,13 @@
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
     "prettier": "^3.0.3",
+    "start-server-and-test": "^2.0.1",
     "typescript": "^5.2.2"
   },
   "dependencies": {
     "dotenv-extended": "^2.9.0",
+    "express": "^4.18.2",
+    "express-async-errors": "^3.1.1",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.3.17"
