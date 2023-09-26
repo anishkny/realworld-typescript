@@ -8,5 +8,4 @@ export const db = new DataSource({
   url: POSTGRES_URI,
   entities: ["dist/entities/**/*.js"],
   migrations: ["dist/migrations/**/*.js"],
-  migrationsRun: true,
 });
