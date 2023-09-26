@@ -26,7 +26,7 @@ jobs:
       - name: Build and test
         run: |
           npm install
-          npm run migrations:run
+          npm run migration:run
           npm test
       - name: Approve and merge Dependabot PR
         if: github.actor == 'dependabot[bot]' && github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main'
