@@ -12,7 +12,7 @@ module.exports = {
     project: true,
     tsconfigRootDir: __dirname,
   },
-  ignorePatterns: ["node_modules", "dist", ".eslintrc.cjs"],
+  ignorePatterns: ["node_modules", "dist", ".eslintrc.cjs", "test"],
   rules: {
     "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
   },
