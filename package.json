@@ -3,8 +3,7 @@
     "clean": "rm -rf dist",
     "build:only": "npm run clean && tsc",
     "migration:generate": "npm run build:only && typeorm migration:generate -d ./dist/infra/db.js ./src/migrations/Migration",
-    "migration:run:only": "typeorm migration:run -d ./dist/infra/db.js",
-    "migration:run": "npm run build:only && npm run migration:run:only",
+    "migration:run": "npm run build:only && typeorm migration:run -d ./dist/infra/db.js",
     "migration:check": "npm run migration:generate -- --check",
     "schema:generate": "typescript-json-schema --required --noExtraProps ./src/dtos/input.ts '*' --out ./generated-schemas.json",
     "format:fix": "prettier --write .",
@@ -13,7 +12,7 @@
     "lint:check": "eslint .",
     "build": "npm run clean && npm run migration:check && npm run schema:generate && npm run format:check && npm run lint:check && npm run build:only",
     "start:only": "node dist",
-    "start": "npm run build && npm run migration:run:only && npm run start:only",
+    "start": "npm run build && npm run start:only",
     "test": "curl -sSf http://localhost:8000/",
     "ci": "start-server-and-test 8000"
   },
