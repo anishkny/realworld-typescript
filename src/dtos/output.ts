@@ -5,11 +5,13 @@ export class ErrorDTO {
 
   constructor(errors: ErrorObject[] | string) {
     if (typeof errors === "string") {
-      this.errors = { message: errors };
+      this.errors = { message: [errors] };
     } else {
       this.errors = {};
       errors.forEach((error) => {
-        this.errors[error.instancePath] = error.message;
+        this.errors[error.instancePath] = this.errors[error.instancePath]
+          ? [...this.errors[error.instancePath], error.message]
+          : [error.message];
       });
     }
   }

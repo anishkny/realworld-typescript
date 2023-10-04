@@ -5,16 +5,14 @@ import "express-async-errors";
 
 import db from "./infra/db";
 import router from "./routes";
+import { authenicateRequest } from "./infra/auth";
 
 db.initialize().then(main).catch(console.error);
 
 function main() {
   const app = express();
   app.use(express.json());
-
-  app.get("/", (req, res) => {
-    res.send("Hello World!");
-  });
+  app.use(authenicateRequest);
 
   app.use("/api", router);
 
