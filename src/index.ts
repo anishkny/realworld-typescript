@@ -15,7 +15,10 @@ function main() {
   app.use(express.json());
   app.use(cors());
 
-  app.get("/", (_req, res) => {
+  app.get("/", (req, res) => {
+    if (req.query.throwError) {
+      throw new Error("Error thrown!");
+    }
     res.send("Hello World!");
   });
 
@@ -23,11 +26,9 @@ function main() {
 
   app.use("/api", router);
 
-  app.use((err, req, res, _next) => {
+  app.use((err, _req, res, _next) => {
     console.log(err);
-    if (!res.headersSent) {
-      res.status(500).send("Something broke!");
-    }
+    res.status(500).send("Something broke!");
   });
 
   app.listen(process.env.PORT, () => {
