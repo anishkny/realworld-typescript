@@ -2,7 +2,7 @@ import { Column, Entity } from "typeorm";
 import { BaseEntity } from "./BaseEntity";
 import { UserRegistrationDTO } from "../dtos/input";
 import { hashPassword } from "../infra/password";
-import { AuthenticatedUserDTO } from "../dtos/output";
+import { AuthenticatedUserDTO, ProfileDTO } from "../dtos/output";
 
 @Entity()
 export class User extends BaseEntity {
@@ -40,6 +40,17 @@ export class User extends BaseEntity {
         username: user.username,
         bio: user.bio,
         image: user.image,
+      },
+    };
+  }
+
+  public static toProfileDTO(user: User, following: boolean): ProfileDTO {
+    return {
+      profile: {
+        username: user.username,
+        bio: user.bio,
+        image: user.image,
+        following,
       },
     };
   }

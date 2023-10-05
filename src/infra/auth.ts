@@ -27,11 +27,14 @@ export function authenicateRequest(
     const allowedUnauthenticated = [
       { method: "POST", path: "/api/users" },
       { method: "POST", path: "/api/users/login" },
+      { method: "GET", path: "/api/profiles" },
     ];
+    const reqPathLowerCase = req.path.toLowerCase();
+    const reqMethodUpperCase = req.method.toUpperCase();
     const isAllowedUnauthenticated = allowedUnauthenticated.some(
       (route) =>
-        route.method === req.method &&
-        route.path.startsWith(req.path.toLowerCase()),
+        reqMethodUpperCase === route.method &&
+        reqPathLowerCase.startsWith(route.path),
     );
     if (isAllowedUnauthenticated) {
       return next();

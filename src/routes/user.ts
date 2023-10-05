@@ -55,9 +55,6 @@ userRouter.get("/user", async (req, res) => {
   const { decodedJWT: decodedJWT, token } = res.locals;
 
   const user = await db.manager.findOneBy(User, { id: decodedJWT.userId });
-  if (!user) {
-    return res.status(404).json(new ErrorDTO("User not found"));
-  }
 
   return res.status(200).json(User.toAuthenticatedUserDTO(user, token));
 });
@@ -72,9 +69,6 @@ userRouter.put("/user", async (req, res) => {
   }
 
   const user = await db.manager.findOneBy(User, { id: decodedJWT.userId });
-  if (!user) {
-    return res.status(404).json(new ErrorDTO("User not found"));
-  }
 
   // Update user
   db.manager.merge(User, user, req.body.user);

@@ -26,3 +26,12 @@ export interface AuthenticatedUserDTO {
     image: string;
   };
 }
+
+export interface ProfileDTO {
+  profile: {
+    username: string;
+    bio: string;
+    image: string;
+    following: boolean;
+  };
+}
