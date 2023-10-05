@@ -11,9 +11,10 @@
     "lint:fix": "eslint --fix .",
     "lint:check": "eslint .",
     "build": "npm run clean && npm run migration:check && npm run schema:generate && npm run format:check && npm run lint:check && npm run build:only",
-    "start:only": "node dist",
+    "clean:coverage": "rm -rf coverage/ .nyc_output/ node_modules/.cache/nyc/",
+    "start:only": "npm run clean:coverage && nyc node dist",
     "start": "npm run build && npm run start:only",
-    "test": "curl -sSf http://localhost:8000/",
+    "test": "newman run ./api-tests.postman.json --bail",
     "ci": "start-server-and-test 8000"
   },
   "devDependencies": {
@@ -24,6 +25,8 @@
     "@typescript-eslint/parser": "^6.7.3",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
+    "newman": "^6.0.0",
+    "nyc": "^15.1.0",
     "prettier": "^3.0.3",
     "start-server-and-test": "^2.0.1",
     "typescript": "^5.2.2",

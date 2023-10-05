@@ -12,7 +12,14 @@ module.exports = {
     project: true,
     tsconfigRootDir: __dirname,
   },
-  ignorePatterns: ["node_modules", "dist", ".eslintrc.cjs", "test"],
+  ignorePatterns: [
+    "node_modules",
+    "dist",
+    ".eslintrc.cjs",
+    "test",
+    "nyc.config.js",
+    "coverage",
+  ],
   rules: {
     "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
   },

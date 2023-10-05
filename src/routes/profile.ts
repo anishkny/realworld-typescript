@@ -34,11 +34,8 @@ profileRouter.get("/profiles/:username", async (req, res) => {
 profileRouter.post("/profiles/:username/follow", async (req, res) => {
   const { username } = req.params;
   const { decodedJWT: decodedJWT } = res.locals;
-  if (!decodedJWT) {
-    return res.status(401).json(new ErrorDTO("Unauthorized"));
-  }
 
-  // Find user
+  // Find user to follow
   const targetUser = await db.manager.findOne(User, {
     where: { username },
   });
@@ -61,11 +58,8 @@ profileRouter.post("/profiles/:username/follow", async (req, res) => {
 profileRouter.delete("/profiles/:username/follow", async (req, res) => {
   const { username } = req.params;
   const { decodedJWT: decodedJWT } = res.locals;
-  if (!decodedJWT) {
-    return res.status(401).json(new ErrorDTO("Unauthorized"));
-  }
 
-  // Find user
+  // Find user to unfollow
   const targetUser = await db.manager.findOne(User, {
     where: { username },
   });

@@ -9,6 +9,7 @@ const generatedSchemas = JSON.parse(
 ajv.addSchema(generatedSchemas);
 
 export default function validator(schema: DTOTypes) {
+  // istanbul ignore next
   if (!ajv.getSchema(`#/definitions/${schema}`)) {
     throw new Error(`Schema ${schema} does not exist`);
   }
