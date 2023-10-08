@@ -35,3 +35,23 @@ export interface ProfileDTO {
     following: boolean;
   };
 }
+
+export interface ArticleDTO {
+  article: {
+    slug: string;
+    title: string;
+    description: string;
+    body: string;
+    tagList: string[];
+    createdAt: string;
+    updatedAt: string;
+    favorited: boolean;
+    favoritesCount: number;
+    author: {
+      username: string;
+      bio: string;
+      image: string;
+      following: boolean;
+    };
+  };
+}

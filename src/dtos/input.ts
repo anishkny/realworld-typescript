@@ -1,4 +1,8 @@
-export type DTOTypes = "UserRegistrationDTO" | "UserLoginDTO" | "UserUpdateDTO";
+export type DTOTypes =
+  | "UserRegistrationDTO"
+  | "UserLoginDTO"
+  | "UserUpdateDTO"
+  | "ArticleCreationDTO";
 
 export interface UserRegistrationDTO {
   user: {
@@ -23,5 +27,14 @@ export interface UserUpdateDTO {
     email?: string;
     bio?: string;
     image?: string;
+  };
+}
+
+export interface ArticleCreationDTO {
+  article: {
+    title: string;
+    description: string;
+    body: string;
+    tagList?: string[];
   };
 }

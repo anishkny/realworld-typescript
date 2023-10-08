@@ -29,27 +29,24 @@ export class User extends BaseEntity {
     return user;
   }
 
-  public static toAuthenticatedUserDTO(
-    user: User,
-    token: string,
-  ): AuthenticatedUserDTO {
+  public toAuthenticatedUserDTO(token: string): AuthenticatedUserDTO {
     return {
       user: {
-        email: user.email,
+        email: this.email,
         token,
-        username: user.username,
-        bio: user.bio,
-        image: user.image,
+        username: this.username,
+        bio: this.bio,
+        image: this.image,
       },
     };
   }
 
-  public static toProfileDTO(user: User, following: boolean): ProfileDTO {
+  public toProfileDTO(following: boolean): ProfileDTO {
     return {
       profile: {
-        username: user.username,
-        bio: user.bio,
-        image: user.image,
+        username: this.username,
+        bio: this.bio,
+        image: this.image,
         following,
       },
     };
