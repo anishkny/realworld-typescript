@@ -1831,8 +1831,7 @@
 									"pm.collectionVariables.set(\"articleTitle\", pm.variables.replaceIn('{{$randomLoremSentence}}'));",
 									"pm.collectionVariables.set(\"articleDescription\", pm.variables.replaceIn('{{$randomLoremSentence}}'));",
 									"pm.collectionVariables.set(\"articleBody\", pm.variables.replaceIn('{{$randomLoremParagraph}}'));",
-									"",
-									"console.log(`pm.collectionVariables.get(\"articleTitle\") = ${pm.collectionVariables.get(\"articleTitle\")}`)"
+									""
 								],
 								"type": "text/javascript"
 							}
