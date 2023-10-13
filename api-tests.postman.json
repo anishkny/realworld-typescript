@@ -1339,27 +1339,29 @@
 							"script": {
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
+									"  pm.response.to.have.status(200);",
 									"});",
 									"",
 									"pm.test('Schema is valid', function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(tv4.validate(jsonData, schemas.article)).to.be.true;    ",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(tv4.validate(jsonData, schemas.article)).to.be.true;",
+									"  const articleSlug = jsonData.article.slug;",
+									"  pm.collectionVariables.set('articleSlug', articleSlug);",
 									"});",
 									"",
-									"pm.test(\"Data is correct\", function() {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.article.title).to.eql(pm.collectionVariables.get(\"articleTitle\"));",
-									"    pm.expect(jsonData.article.description).to.eql(pm.collectionVariables.get(\"articleDescription\"));",
-									"    pm.expect(jsonData.article.body).to.eql(pm.collectionVariables.get(\"articleBody\"));",
-									"    pm.expect(jsonData.article.author.username).to.eql(pm.collectionVariables.get(\"username\"));",
+									"pm.test(\"Data is correct\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.article.title).to.eql(pm.collectionVariables.get(\"articleTitle\"));",
+									"  pm.expect(jsonData.article.description).to.eql(pm.collectionVariables.get(\"articleDescription\"));",
+									"  pm.expect(jsonData.article.body).to.eql(pm.collectionVariables.get(\"articleBody\"));",
+									"  pm.expect(jsonData.article.author.username).to.eql(pm.collectionVariables.get(\"celeb-username\"));",
 									"",
-									"    const expTagList = [",
-									"      pm.collectionVariables.get(\"articleTag0\"),",
-									"      pm.collectionVariables.get(\"articleTag1\"),",
-									"      pm.collectionVariables.get(\"articleTag2\"),",
-									"    ].sort();",
-									"    pm.expect(jsonData.article.tagList.sort()).to.eql(expTagList);",
+									"  const expTagList = [",
+									"    pm.collectionVariables.get(\"articleTag0\"),",
+									"    pm.collectionVariables.get(\"articleTag1\"),",
+									"    pm.collectionVariables.get(\"articleTag2\"),",
+									"  ].sort();",
+									"  pm.expect(jsonData.article.tagList.sort()).to.eql(expTagList);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -1371,7 +1373,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
+								"value": "{{celeb-token}}",
 								"type": "text"
 							}
 						],
@@ -1415,6 +1417,15 @@
 								],
 								"type": "text/javascript"
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
@@ -1422,7 +1433,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
+								"value": "{{celeb-token}}",
 								"type": "text"
 							}
 						],
@@ -1442,6 +1453,369 @@
 							],
 							"path": [
 								"articles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get article",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Schema is valid', function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(tv4.validate(jsonData, schemas.article)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Data is correct\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.article.title).to.eql(pm.collectionVariables.get(\"articleTitle\"));",
+									"  pm.expect(jsonData.article.description).to.eql(pm.collectionVariables.get(\"articleDescription\"));",
+									"  pm.expect(jsonData.article.body).to.eql(pm.collectionVariables.get(\"articleBody\"));",
+									"  pm.expect(jsonData.article.author.username).to.eql(pm.collectionVariables.get(\"celeb-username\"));",
+									"",
+									"  const expTagList = [",
+									"    pm.collectionVariables.get(\"articleTag0\"),",
+									"    pm.collectionVariables.get(\"articleTag1\"),",
+									"    pm.collectionVariables.get(\"articleTag2\"),",
+									"  ].sort();",
+									"  pm.expect(jsonData.article.tagList.sort()).to.eql(expTagList);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{APIURL}}/articles/{{articleSlug}}",
+							"host": [
+								"{{APIURL}}"
+							],
+							"path": [
+								"articles",
+								"{{articleSlug}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get article - Unknown",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"  pm.response.to.have.status(404);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{APIURL}}/articles/{{$randomUUID}}",
+							"host": [
+								"{{APIURL}}"
+							],
+							"path": [
+								"articles",
+								"{{$randomUUID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Follow",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Schema is valid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(tv4.validate(jsonData, schemas.profile)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Data is correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    expectedValue = {",
+									"        profile: {",
+									"            username: pm.collectionVariables.get('celeb-username'),",
+									"            bio: null,",
+									"            image: null,",
+									"            following: true,",
+									"        }",
+									"    };",
+									"    pm.expect(jsonData).to.deep.equal(expectedValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{APIURL}}/profiles/{{celeb-username}}/follow",
+							"host": [
+								"{{APIURL}}"
+							],
+							"path": [
+								"profiles",
+								"{{celeb-username}}",
+								"follow"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get article - As follower",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Schema is valid', function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(tv4.validate(jsonData, schemas.article)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Data is correct\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.article.title).to.eql(pm.collectionVariables.get(\"articleTitle\"));",
+									"  pm.expect(jsonData.article.description).to.eql(pm.collectionVariables.get(\"articleDescription\"));",
+									"  pm.expect(jsonData.article.body).to.eql(pm.collectionVariables.get(\"articleBody\"));",
+									"  pm.expect(jsonData.article.author.username).to.eql(pm.collectionVariables.get(\"celeb-username\"));",
+									"  pm.expect(jsonData.article.author.following).to.be.true;",
+									"",
+									"  const expTagList = [",
+									"    pm.collectionVariables.get(\"articleTag0\"),",
+									"    pm.collectionVariables.get(\"articleTag1\"),",
+									"    pm.collectionVariables.get(\"articleTag2\"),",
+									"  ].sort();",
+									"  pm.expect(jsonData.article.tagList.sort()).to.eql(expTagList);  ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{APIURL}}/articles/{{articleSlug}}",
+							"host": [
+								"{{APIURL}}"
+							],
+							"path": [
+								"articles",
+								"{{articleSlug}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unfollow",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Schema is valid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(tv4.validate(jsonData, schemas.profile)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Data is correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    expectedValue = {",
+									"        profile: {",
+									"            username: pm.collectionVariables.get('celeb-username'),",
+									"            bio: null,",
+									"            image: null,",
+									"            following: false,",
+									"        }",
+									"    };",
+									"    pm.expect(jsonData).to.deep.equal(expectedValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{APIURL}}/profiles/{{celeb-username}}/follow",
+							"host": [
+								"{{APIURL}}"
+							],
+							"path": [
+								"profiles",
+								"{{celeb-username}}",
+								"follow"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get article - As nonfollower",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Schema is valid', function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(tv4.validate(jsonData, schemas.article)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Data is correct\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.article.title).to.eql(pm.collectionVariables.get(\"articleTitle\"));",
+									"  pm.expect(jsonData.article.description).to.eql(pm.collectionVariables.get(\"articleDescription\"));",
+									"  pm.expect(jsonData.article.body).to.eql(pm.collectionVariables.get(\"articleBody\"));",
+									"  pm.expect(jsonData.article.author.username).to.eql(pm.collectionVariables.get(\"celeb-username\"));",
+									"  pm.expect(jsonData.article.author.following).to.be.false;",
+									"",
+									"  const expTagList = [",
+									"    pm.collectionVariables.get(\"articleTag0\"),",
+									"    pm.collectionVariables.get(\"articleTag1\"),",
+									"    pm.collectionVariables.get(\"articleTag2\"),",
+									"  ].sort();",
+									"  pm.expect(jsonData.article.tagList.sort()).to.eql(expTagList);  ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{APIURL}}/articles/{{articleSlug}}",
+							"host": [
+								"{{APIURL}}"
+							],
+							"path": [
+								"articles",
+								"{{articleSlug}}"
 							]
 						}
 					},
@@ -1774,6 +2148,10 @@
 		},
 		{
 			"key": "celeb-token",
+			"value": ""
+		},
+		{
+			"key": "articleSlug",
 			"value": ""
 		}
 	]

@@ -28,6 +28,7 @@ export function authenicateRequest(
       { method: "POST", path: "/api/users" },
       { method: "POST", path: "/api/users/login" },
       { method: "GET", path: "/api/profiles" },
+      { method: "GET", path: "/api/articles" },
     ];
     const reqPathLowerCase = req.path.toLowerCase();
     const reqMethodUpperCase = req.method.toUpperCase();

@@ -27,7 +27,26 @@ articleRouter.post("/articles", async (req, res) => {
   );
   await db.manager.save(article);
 
-  return res.status(200).json(article.toArticleDTO());
+  return res.status(200).json(await article.toArticleDTO());
+});
+
+// Get article
+articleRouter.get("/articles/:slug", async (req, res) => {
+  const article = await db.manager.findOneBy(Article, {
+    slug: req.params.slug,
+  });
+  if (!article) {
+    return res.status(404).json(new ErrorDTO("Article not found"));
+  }
+
+  // Get user if authenticated
+  let user = null;
+  const decodedJWT: JWTPayload = res.locals.decodedJWT;
+  if (decodedJWT) {
+    user = await db.manager.findOneBy(User, { id: decodedJWT.userId });
+  }
+
+  return res.status(200).json(await article.toArticleDTO(user));
 });
 
 export default articleRouter;

@@ -19,7 +19,7 @@ function main() {
 
   app.get("/", (req, res) => {
     if (req.query.throwError) {
-      throw new Error("Error thrown!");
+      throw new Error("Expected error for testing");
     }
     res.send("Hello World!");
   });
@@ -28,6 +28,7 @@ function main() {
 
   app.use("/api", router);
 
+  // Error handler
   app.use((err, _req, res, _next) => {
     console.log(err);
     res.status(500).send("Something broke!");

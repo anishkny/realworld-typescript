@@ -5,6 +5,7 @@ import { ArticleCreationDTO } from "../dtos/input";
 import { ArticleDTO } from "../dtos/output";
 import slugify from "slugify";
 import { ArticleTag } from "./ArticleTag";
+import { isFollowing } from "../queries/profile";
 
 @Entity()
 export class Article extends BaseEntity {
@@ -20,11 +21,12 @@ export class Article extends BaseEntity {
   @Column()
   body: string;
 
-  @ManyToOne(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.id, { eager: true })
   author: User;
 
   @OneToMany(() => ArticleTag, (articleTag) => articleTag.article, {
     cascade: true,
+    eager: true,
   })
   tags: ArticleTag[];
 
@@ -53,7 +55,11 @@ export class Article extends BaseEntity {
     return article;
   }
 
-  public toArticleDTO(): ArticleDTO {
+  public async toArticleDTO(asUser?: User): Promise<ArticleDTO> {
+    let following = false;
+    if (asUser) {
+      following = await isFollowing(asUser, this.author);
+    }
     return {
       article: {
         slug: this.slug,
@@ -69,7 +75,7 @@ export class Article extends BaseEntity {
           username: this.author.username,
           bio: this.author.bio,
           image: this.author.image,
-          following: false,
+          following,
         },
       },
     };
