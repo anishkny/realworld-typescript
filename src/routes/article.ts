@@ -41,4 +41,26 @@ articleRouter.get("/articles/:slug", async (req, res) => {
   return res.status(200).json(await article.toArticleDTO(authenticatedUser));
 });
 
+// Update article
+articleRouter.put("/articles/:slug", async (req, res) => {
+  const article = await db.manager.findOneBy(Article, {
+    slug: req.params.slug,
+  });
+  if (!article) {
+    return res.status(404).json(new ErrorDTO("Article not found"));
+  }
+
+  const v = validator("ArticleUpdateDTO");
+  if (!v(req.body)) {
+    return res.status(422).json(new ErrorDTO(v.errors));
+  }
+
+  // Update article
+  db.manager.merge(Article, article, req.body.article);
+  article.setSlug();
+  await db.manager.save(article);
+
+  return res.status(200).json(await article.toArticleDTO());
+});
+
 export default articleRouter;
