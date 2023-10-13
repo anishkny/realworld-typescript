@@ -1,4 +1,5 @@
 module.exports = {
+  cache: false,
   exclude: ["src/migrations/**"],
   reporter: ["text", "html", "lcov"],
   "check-coverage": true,

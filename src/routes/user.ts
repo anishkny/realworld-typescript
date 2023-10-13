@@ -6,6 +6,7 @@ import { ErrorDTO } from "../dtos/output";
 import db from "../infra/db";
 import { generateToken } from "../infra/auth";
 import { comparePassword } from "../infra/password";
+import { JWTPayload } from "../infra/auth";
 
 const userRouter = Router();
 
@@ -22,7 +23,7 @@ userRouter.post("/users", async (req, res) => {
 
   // Return user
   const token = generateToken({ userId: user.id });
-  return res.status(200).json(User.toAuthenticatedUserDTO(user, token));
+  return res.status(200).json(user.toAuthenticatedUserDTO(token));
 });
 
 // Login user
@@ -47,21 +48,23 @@ userRouter.post("/users/login", async (req, res) => {
 
   // Return user
   const token = generateToken({ userId: user.id });
-  return res.status(200).json(User.toAuthenticatedUserDTO(user, token));
+  return res.status(200).json(user.toAuthenticatedUserDTO(token));
 });
 
 // Get user
 userRouter.get("/user", async (req, res) => {
-  const { decodedJWT: decodedJWT, token } = res.locals;
+  const decodedJWT: JWTPayload = res.locals.decodedJWT;
+  const token: string = res.locals.token;
 
   const user = await db.manager.findOneBy(User, { id: decodedJWT.userId });
 
-  return res.status(200).json(User.toAuthenticatedUserDTO(user, token));
+  return res.status(200).json(user.toAuthenticatedUserDTO(token));
 });
 
 // Update user
 userRouter.put("/user", async (req, res) => {
-  const { decodedJWT: decodedJWT, token } = res.locals;
+  const decodedJWT: JWTPayload = res.locals.decodedJWT;
+  const token: string = res.locals.token;
 
   const v = validator("UserUpdateDTO");
   if (!v(req.body)) {
@@ -75,7 +78,7 @@ userRouter.put("/user", async (req, res) => {
   await db.manager.save(user);
 
   // Return user
-  return res.status(200).json(User.toAuthenticatedUserDTO(user, token));
+  return res.status(200).json(user.toAuthenticatedUserDTO(token));
 });
 
 export default userRouter;

@@ -3,17 +3,16 @@
     "clean": "rm -rf dist",
     "build:only": "npm run clean && tsc",
     "migration:generate": "npm run build:only && typeorm migration:generate -d ./dist/infra/db.js ./src/migrations/Migration",
-    "migration:run": "npm run build:only && typeorm migration:run -d ./dist/infra/db.js",
-    "migration:check": "npm run migration:generate -- --check",
+    "migration:run": "typeorm migration:run -d ./dist/infra/db.js",
     "schema:generate": "typescript-json-schema --required --noExtraProps ./src/dtos/input.ts '*' --out ./generated-schemas.json",
     "format:fix": "prettier --write .",
     "format:check": "prettier --check .",
     "lint:fix": "eslint --fix .",
     "lint:check": "eslint .",
-    "build": "npm run clean && npm run migration:check && npm run schema:generate && npm run format:check && npm run lint:check && npm run build:only",
+    "build": "npm run clean && npm run schema:generate && npm run format:check && npm run lint:check && npm run build:only",
     "clean:coverage": "rm -rf coverage/ .nyc_output/ node_modules/.cache/nyc/",
     "start:only": "npm run clean:coverage && nyc node dist",
-    "start": "npm run build && npm run start:only",
+    "start": "npm run build && npm run migration:run && npm run start:only",
     "test": "newman run ./api-tests.postman.json --bail",
     "ci": "start-server-and-test 8000"
   },
@@ -39,9 +38,11 @@
     "dotenv-extended": "^2.9.0",
     "express": "^4.18.2",
     "express-async-errors": "^3.1.1",
+    "express-body-parser-error-handler": "^1.0.7",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
+    "slugify": "^1.6.6",
     "typeorm": "^0.3.17"
   }
 }

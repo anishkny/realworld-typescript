@@ -4,13 +4,14 @@ import { User } from "../entities/User";
 import { ErrorDTO } from "../dtos/output";
 import { isFollowing } from "../queries/profile";
 import { Follow } from "../entities/Follow";
+import { JWTPayload } from "../infra/auth";
 
 const profileRouter = Router();
 
 // Get profile
 profileRouter.get("/profiles/:username", async (req, res) => {
   const { username } = req.params;
-  const { decodedJWT: decodedJWT } = res.locals;
+  const decodedJWT: JWTPayload = res.locals.decodedJWT;
 
   // Find user
   const targetUser = await db.manager.findOne(User, {
@@ -27,13 +28,13 @@ profileRouter.get("/profiles/:username", async (req, res) => {
     following = await isFollowing(user, targetUser);
   }
 
-  return res.status(200).json(User.toProfileDTO(targetUser, following));
+  return res.status(200).json(targetUser.toProfileDTO(following));
 });
 
 // Follow user
 profileRouter.post("/profiles/:username/follow", async (req, res) => {
   const { username } = req.params;
-  const { decodedJWT: decodedJWT } = res.locals;
+  const decodedJWT: JWTPayload = res.locals.decodedJWT;
 
   // Find user to follow
   const targetUser = await db.manager.findOne(User, {
@@ -51,13 +52,13 @@ profileRouter.post("/profiles/:username/follow", async (req, res) => {
     );
   }
 
-  return res.status(200).json(User.toProfileDTO(targetUser, true));
+  return res.status(200).json(targetUser.toProfileDTO(true));
 });
 
 // Unfollow user
 profileRouter.delete("/profiles/:username/follow", async (req, res) => {
   const { username } = req.params;
-  const { decodedJWT: decodedJWT } = res.locals;
+  const decodedJWT: JWTPayload = res.locals.decodedJWT;
 
   // Find user to unfollow
   const targetUser = await db.manager.findOne(User, {
@@ -74,7 +75,7 @@ profileRouter.delete("/profiles/:username/follow", async (req, res) => {
     followed: { id: targetUser.id },
   });
 
-  return res.status(200).json(User.toProfileDTO(targetUser, false));
+  return res.status(200).json(targetUser.toProfileDTO(false));
 });
 
 export default profileRouter;

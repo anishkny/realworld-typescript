@@ -36,6 +36,7 @@
 									"pm.test('Schema is valid', function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(tv4.validate(jsonData, schemas.authenticatedUser)).to.be.true;    ",
+									"    pm.collectionVariables.set('token', jsonData.user.token);",
 									"});",
 									""
 								],
@@ -701,6 +702,7 @@
 									"pm.test('Schema is valid', function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(tv4.validate(jsonData, schemas.authenticatedUser)).to.be.true;    ",
+									"    pm.collectionVariables.set('celeb-token', jsonData.user.token);",
 									"});",
 									""
 								],
@@ -1311,6 +1313,517 @@
 			]
 		},
 		{
+			"name": "Article",
+			"item": [
+				{
+					"name": "Create article",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"articleTitle\", pm.variables.replaceIn('{{$randomLoremSentence}}'));",
+									"pm.collectionVariables.set(\"articleDescription\", pm.variables.replaceIn('{{$randomLoremSentence}}'));",
+									"pm.collectionVariables.set(\"articleBody\", pm.variables.replaceIn('{{$randomLoremParagraph}}'));",
+									"",
+									"for (let i = 0; i < 3; ++i) {",
+									"  pm.collectionVariables.set(`articleTag${i}`, pm.variables.replaceIn('{{$randomLoremWord}}'));",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Schema is valid', function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(tv4.validate(jsonData, schemas.article)).to.be.true;",
+									"  const articleSlug = jsonData.article.slug;",
+									"  pm.collectionVariables.set('articleSlug', articleSlug);",
+									"});",
+									"",
+									"pm.test(\"Data is correct\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.article.title).to.eql(pm.collectionVariables.get(\"articleTitle\"));",
+									"  pm.expect(jsonData.article.description).to.eql(pm.collectionVariables.get(\"articleDescription\"));",
+									"  pm.expect(jsonData.article.body).to.eql(pm.collectionVariables.get(\"articleBody\"));",
+									"  pm.expect(jsonData.article.author.username).to.eql(pm.collectionVariables.get(\"celeb-username\"));",
+									"",
+									"  const expTagList = [",
+									"    pm.collectionVariables.get(\"articleTag0\"),",
+									"    pm.collectionVariables.get(\"articleTag1\"),",
+									"    pm.collectionVariables.get(\"articleTag2\"),",
+									"  ].sort();",
+									"  pm.expect(jsonData.article.tagList.sort()).to.eql(expTagList);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{celeb-token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"article\": {\n    \"title\": \"{{articleTitle}}\",\n    \"description\": \"{{articleDescription}}\",\n    \"body\": \"{{articleBody}}\",\n    \"tagList\": [\"{{articleTag0}}\", \"{{articleTag1}}\", \"{{articleTag2}}\"] \n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{APIURL}}/articles",
+							"host": [
+								"{{APIURL}}"
+							],
+							"path": [
+								"articles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create article - Bad request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"pm.test(\"Error is returned\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    const expectedValue = { \"errors\": { \"/article\": [ \"must have required property 'title'\" ] } };",
+									"    pm.expect(jsonData).to.deep.equal(expectedValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{celeb-token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"article\": {\n    \"body\": \"foo\",\n    \"description\": \"foo\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{APIURL}}/articles",
+							"host": [
+								"{{APIURL}}"
+							],
+							"path": [
+								"articles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get article",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Schema is valid', function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(tv4.validate(jsonData, schemas.article)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Data is correct\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.article.title).to.eql(pm.collectionVariables.get(\"articleTitle\"));",
+									"  pm.expect(jsonData.article.description).to.eql(pm.collectionVariables.get(\"articleDescription\"));",
+									"  pm.expect(jsonData.article.body).to.eql(pm.collectionVariables.get(\"articleBody\"));",
+									"  pm.expect(jsonData.article.author.username).to.eql(pm.collectionVariables.get(\"celeb-username\"));",
+									"",
+									"  const expTagList = [",
+									"    pm.collectionVariables.get(\"articleTag0\"),",
+									"    pm.collectionVariables.get(\"articleTag1\"),",
+									"    pm.collectionVariables.get(\"articleTag2\"),",
+									"  ].sort();",
+									"  pm.expect(jsonData.article.tagList.sort()).to.eql(expTagList);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{APIURL}}/articles/{{articleSlug}}",
+							"host": [
+								"{{APIURL}}"
+							],
+							"path": [
+								"articles",
+								"{{articleSlug}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get article - Unknown",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"  pm.response.to.have.status(404);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{APIURL}}/articles/{{$randomUUID}}",
+							"host": [
+								"{{APIURL}}"
+							],
+							"path": [
+								"articles",
+								"{{$randomUUID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Follow",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Schema is valid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(tv4.validate(jsonData, schemas.profile)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Data is correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    expectedValue = {",
+									"        profile: {",
+									"            username: pm.collectionVariables.get('celeb-username'),",
+									"            bio: null,",
+									"            image: null,",
+									"            following: true,",
+									"        }",
+									"    };",
+									"    pm.expect(jsonData).to.deep.equal(expectedValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{APIURL}}/profiles/{{celeb-username}}/follow",
+							"host": [
+								"{{APIURL}}"
+							],
+							"path": [
+								"profiles",
+								"{{celeb-username}}",
+								"follow"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get article - As follower",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Schema is valid', function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(tv4.validate(jsonData, schemas.article)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Data is correct\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.article.title).to.eql(pm.collectionVariables.get(\"articleTitle\"));",
+									"  pm.expect(jsonData.article.description).to.eql(pm.collectionVariables.get(\"articleDescription\"));",
+									"  pm.expect(jsonData.article.body).to.eql(pm.collectionVariables.get(\"articleBody\"));",
+									"  pm.expect(jsonData.article.author.username).to.eql(pm.collectionVariables.get(\"celeb-username\"));",
+									"  pm.expect(jsonData.article.author.following).to.be.true;",
+									"",
+									"  const expTagList = [",
+									"    pm.collectionVariables.get(\"articleTag0\"),",
+									"    pm.collectionVariables.get(\"articleTag1\"),",
+									"    pm.collectionVariables.get(\"articleTag2\"),",
+									"  ].sort();",
+									"  pm.expect(jsonData.article.tagList.sort()).to.eql(expTagList);  ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{APIURL}}/articles/{{articleSlug}}",
+							"host": [
+								"{{APIURL}}"
+							],
+							"path": [
+								"articles",
+								"{{articleSlug}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unfollow",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Schema is valid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(tv4.validate(jsonData, schemas.profile)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Data is correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    expectedValue = {",
+									"        profile: {",
+									"            username: pm.collectionVariables.get('celeb-username'),",
+									"            bio: null,",
+									"            image: null,",
+									"            following: false,",
+									"        }",
+									"    };",
+									"    pm.expect(jsonData).to.deep.equal(expectedValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{APIURL}}/profiles/{{celeb-username}}/follow",
+							"host": [
+								"{{APIURL}}"
+							],
+							"path": [
+								"profiles",
+								"{{celeb-username}}",
+								"follow"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get article - As nonfollower",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Schema is valid', function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(tv4.validate(jsonData, schemas.article)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Data is correct\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.article.title).to.eql(pm.collectionVariables.get(\"articleTitle\"));",
+									"  pm.expect(jsonData.article.description).to.eql(pm.collectionVariables.get(\"articleDescription\"));",
+									"  pm.expect(jsonData.article.body).to.eql(pm.collectionVariables.get(\"articleBody\"));",
+									"  pm.expect(jsonData.article.author.username).to.eql(pm.collectionVariables.get(\"celeb-username\"));",
+									"  pm.expect(jsonData.article.author.following).to.be.false;",
+									"",
+									"  const expTagList = [",
+									"    pm.collectionVariables.get(\"articleTag0\"),",
+									"    pm.collectionVariables.get(\"articleTag1\"),",
+									"    pm.collectionVariables.get(\"articleTag2\"),",
+									"  ].sort();",
+									"  pm.expect(jsonData.article.tagList.sort()).to.eql(expTagList);  ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{APIURL}}/articles/{{articleSlug}}",
+							"host": [
+								"{{APIURL}}"
+							],
+							"path": [
+								"articles",
+								"{{articleSlug}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Etc",
 			"item": [
 				{
@@ -1382,6 +1895,52 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Malformed JSON",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"  pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Data is correct\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.message).to.exist;",
+									"  pm.expect(jsonData.message).to.include(\"Body Parser failed to parse request\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user\": {\n    \"username\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{APIURL}}/users",
+							"host": [
+								"{{APIURL}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
@@ -1392,73 +1951,158 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
+					"const articleDetailsSchema = {",
+					"  \"$schema\": \"http://json-schema.org/draft-04/schema#\",",
+					"  \"type\": \"object\",",
+					"  \"properties\": {",
+					"    \"slug\": {",
+					"      \"type\": \"string\"",
+					"    },",
+					"    \"title\": {",
+					"      \"type\": \"string\"",
+					"    },",
+					"    \"description\": {",
+					"      \"type\": \"string\"",
+					"    },",
+					"    \"body\": {",
+					"      \"type\": \"string\"",
+					"    },",
+					"    \"tagList\": {",
+					"      \"type\": \"array\",",
+					"      \"items\": [",
+					"        {",
+					"          \"type\": \"string\"",
+					"        },",
+					"        {",
+					"          \"type\": \"string\"",
+					"        },",
+					"        {",
+					"          \"type\": \"string\"",
+					"        }",
+					"      ]",
+					"    },",
+					"    \"createdAt\": {",
+					"      \"type\": \"string\"",
+					"    },",
+					"    \"updatedAt\": {",
+					"      \"type\": \"string\"",
+					"    },",
+					"    \"favorited\": {",
+					"      \"type\": \"boolean\"",
+					"    },",
+					"    \"favoritesCount\": {",
+					"      \"type\": \"integer\"",
+					"    },",
+					"    \"author\": {",
+					"      \"type\": \"object\",",
+					"      \"properties\": {",
+					"        \"username\": {",
+					"          \"type\": \"string\"",
+					"        },",
+					"        \"bio\": {",
+					"          \"type\": [\"string\", \"null\"]",
+					"        },",
+					"        \"image\": {",
+					"          \"type\": [\"string\", \"null\"]",
+					"        },",
+					"        \"following\": {",
+					"          \"type\": \"boolean\"",
+					"        }",
+					"      },",
+					"      \"required\": [",
+					"        \"username\",",
+					"        \"bio\",",
+					"        \"image\",",
+					"        \"following\"",
+					"      ]",
+					"    }",
+					"  },",
+					"  \"required\": [",
+					"    \"slug\",",
+					"    \"title\",",
+					"    \"description\",",
+					"    \"body\",",
+					"    \"tagList\",",
+					"    \"createdAt\",",
+					"    \"updatedAt\",",
+					"    \"favorited\",",
+					"    \"favoritesCount\",",
+					"    \"author\"",
+					"  ]",
+					"}",
+					"",
 					"schemas = {",
-					"    authenticatedUser: {",
+					"  authenticatedUser: {",
+					"    \"type\": \"object\",",
+					"    \"properties\": {",
+					"      \"user\": {",
 					"        \"type\": \"object\",",
 					"        \"properties\": {",
-					"            \"user\": {",
-					"                \"type\": \"object\",",
-					"                \"properties\": {",
-					"                    \"email\": {",
-					"                        \"type\": \"string\"",
-					"                    },",
-					"                    \"token\": {",
-					"                        \"type\": \"string\"",
-					"                    },",
-					"                    \"username\": {",
-					"                        \"type\": \"string\"",
-					"                    },",
-					"                    \"bio\": {",
-					"                        \"type\": [\"string\", \"null\"]",
-					"                    },",
-					"                    \"image\": {",
-					"                        \"type\": [\"string\", \"null\"]",
-					"                    }",
-					"                },",
-					"                \"additionalProperties\": false,",
-					"                \"required\": [",
-					"                    \"email\",",
-					"                    \"token\",",
-					"                    \"username\",",
-					"                ]",
-					"            }",
+					"          \"email\": {",
+					"            \"type\": \"string\"",
+					"          },",
+					"          \"token\": {",
+					"            \"type\": \"string\"",
+					"          },",
+					"          \"username\": {",
+					"            \"type\": \"string\"",
+					"          },",
+					"          \"bio\": {",
+					"            \"type\": [\"string\", \"null\"]",
+					"          },",
+					"          \"image\": {",
+					"            \"type\": [\"string\", \"null\"]",
+					"          }",
 					"        },",
 					"        \"additionalProperties\": false,",
 					"        \"required\": [",
-					"            \"user\"",
+					"          \"email\",",
+					"          \"token\",",
+					"          \"username\",",
 					"        ]",
+					"      }",
 					"    },",
-					"    profile: {",
+					"    \"additionalProperties\": false,",
+					"    \"required\": [",
+					"      \"user\"",
+					"    ]",
+					"  },",
+					"  profile: {",
+					"    \"type\": \"object\",",
+					"    \"properties\": {",
+					"      \"profile\": {",
 					"        \"type\": \"object\",",
 					"        \"properties\": {",
-					"            \"profile\": {",
-					"                \"type\": \"object\",",
-					"                \"properties\": {",
-					"                    \"username\": {",
-					"                        \"type\": \"string\"",
-					"                    },",
-					"                    \"bio\": {",
-					"                        \"type\": [\"string\", \"null\"]",
-					"                    },",
-					"                    \"image\": {",
-					"                        \"type\": [\"string\", \"null\"]",
-					"                    },",
-					"                    \"following\": {",
-					"                        \"type\": \"boolean\"",
-					"                    }",
-					"                },",
-					"                \"required\": [",
-					"                    \"username\",",
-					"                    \"bio\",",
-					"                    \"image\",",
-					"                    \"following\"",
-					"                ]",
-					"            }",
+					"          \"username\": {",
+					"            \"type\": \"string\"",
+					"          },",
+					"          \"bio\": {",
+					"            \"type\": [\"string\", \"null\"]",
+					"          },",
+					"          \"image\": {",
+					"            \"type\": [\"string\", \"null\"]",
+					"          },",
+					"          \"following\": {",
+					"            \"type\": \"boolean\"",
+					"          }",
 					"        },",
 					"        \"required\": [",
-					"            \"profile\"",
+					"          \"username\",",
+					"          \"bio\",",
+					"          \"image\",",
+					"          \"following\"",
 					"        ]",
-					"    }",
+					"      }",
+					"    },",
+					"    \"required\": [",
+					"      \"profile\"",
+					"    ]",
+					"  },",
+					"  article: {",
+					"    type: \"object\",",
+					"    properties: articleDetailsSchema,",
+					"    required: [\"article\"]",
+					"  },",
 					"}"
 				]
 			}
@@ -1518,6 +2162,42 @@
 		},
 		{
 			"key": "celeb-password",
+			"value": ""
+		},
+		{
+			"key": "articleBody",
+			"value": ""
+		},
+		{
+			"key": "articleTitle",
+			"value": ""
+		},
+		{
+			"key": "articleDescription",
+			"value": ""
+		},
+		{
+			"key": "articleTags",
+			"value": ""
+		},
+		{
+			"key": "articleTag0",
+			"value": ""
+		},
+		{
+			"key": "articleTag1",
+			"value": ""
+		},
+		{
+			"key": "articleTag2",
+			"value": ""
+		},
+		{
+			"key": "celeb-token",
+			"value": ""
+		},
+		{
+			"key": "articleSlug",
 			"value": ""
 		}
 	]

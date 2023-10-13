@@ -2,6 +2,7 @@ import "./infra/env";
 import "reflect-metadata";
 import express from "express";
 import "express-async-errors";
+import bodyParserErrorHandler from "express-body-parser-error-handler";
 import cors from "cors";
 
 import db from "./infra/db";
@@ -13,11 +14,12 @@ db.initialize().then(main).catch(console.error);
 function main() {
   const app = express();
   app.use(express.json());
+  app.use(bodyParserErrorHandler());
   app.use(cors());
 
   app.get("/", (req, res) => {
     if (req.query.throwError) {
-      throw new Error("Error thrown!");
+      throw new Error("Expected error for testing");
     }
     res.send("Hello World!");
   });
@@ -26,6 +28,7 @@ function main() {
 
   app.use("/api", router);
 
+  // Error handler
   app.use((err, _req, res, _next) => {
     console.log(err);
     res.status(500).send("Something broke!");
