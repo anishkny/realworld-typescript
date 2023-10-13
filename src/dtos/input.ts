@@ -2,7 +2,8 @@ export type DTOTypes =
   | "UserRegistrationDTO"
   | "UserLoginDTO"
   | "UserUpdateDTO"
-  | "ArticleCreationDTO";
+  | "ArticleCreationDTO"
+  | "ArticleUpdateDTO";
 
 export interface UserRegistrationDTO {
   user: {
@@ -36,5 +37,16 @@ export interface ArticleCreationDTO {
     description: string;
     body: string;
     tagList?: string[];
+  };
+}
+
+export interface ArticleUpdateDTO {
+  /**
+   * @minProperties 1
+   */
+  article: {
+    title?: string;
+    description?: string;
+    body?: string;
   };
 }

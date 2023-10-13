@@ -38,10 +38,7 @@ export class Article extends BaseEntity {
     article.title = articleCreationDTO.article.title;
     article.description = articleCreationDTO.article.description;
     article.body = articleCreationDTO.article.body;
-    article.slug =
-      slugify(article.title, { lower: true, strict: true }) +
-      "-" +
-      Math.random().toString(36).substring(2);
+    article.setSlug();
     article.author = author;
 
     // Add tags
@@ -79,5 +76,12 @@ export class Article extends BaseEntity {
         },
       },
     };
+  }
+
+  public setSlug() {
+    this.slug =
+      slugify(this.title, { lower: true, strict: true }) +
+      "-" +
+      Math.random().toString(36).substring(2);
   }
 }
