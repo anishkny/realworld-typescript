@@ -55,6 +55,12 @@ articleRouter.put("/articles/:slug", async (req, res) => {
     return res.status(422).json(new ErrorDTO(v.errors));
   }
 
+  // Check if user is the author
+  const authenticatedUser: User = res.locals.authenticatedUser;
+  if (article.author.id !== authenticatedUser.id) {
+    return res.status(403).json(new ErrorDTO("Forbidden"));
+  }
+
   // Update article
   db.manager.merge(Article, article, req.body.article);
   article.setSlug();
