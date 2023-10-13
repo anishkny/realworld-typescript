@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { ErrorDTO } from "../dtos/output";
+import db from "./db";
+import { User } from "../entities/User";
 
 export interface JWTPayload {
   userId: number;
@@ -14,7 +16,7 @@ export function verifyToken(token: string): JWTPayload {
   return jwt.verify(token, process.env.JWT_SECRET as string) as JWTPayload;
 }
 
-export function authenicateRequest(
+export async function authenicateRequest(
   req: Request,
   res: Response,
   next: NextFunction,
@@ -44,7 +46,11 @@ export function authenicateRequest(
   }
 
   try {
-    res.locals.decodedJWT = verifyToken(token);
+    const decodedJWT = verifyToken(token);
+    const user = await db.manager.findOneBy(User, { id: decodedJWT.userId });
+    // istanbul ignore next
+    if (!user) return res.status(401).json(new ErrorDTO("Unauthorized"));
+    res.locals.authenticatedUser = user;
     next();
   } catch (err) {
     return res.status(401).json(new ErrorDTO("Unauthorized"));

@@ -6,7 +6,6 @@ import { ErrorDTO } from "../dtos/output";
 import db from "../infra/db";
 import { generateToken } from "../infra/auth";
 import { comparePassword } from "../infra/password";
-import { JWTPayload } from "../infra/auth";
 
 const userRouter = Router();
 
@@ -52,26 +51,21 @@ userRouter.post("/users/login", async (req, res) => {
 });
 
 // Get user
-userRouter.get("/user", async (req, res) => {
-  const decodedJWT: JWTPayload = res.locals.decodedJWT;
+userRouter.get("/user", async (_req, res) => {
+  const user: User = res.locals.authenticatedUser;
   const token: string = res.locals.token;
-
-  const user = await db.manager.findOneBy(User, { id: decodedJWT.userId });
-
   return res.status(200).json(user.toAuthenticatedUserDTO(token));
 });
 
 // Update user
 userRouter.put("/user", async (req, res) => {
-  const decodedJWT: JWTPayload = res.locals.decodedJWT;
+  const user: User = res.locals.authenticatedUser;
   const token: string = res.locals.token;
 
   const v = validator("UserUpdateDTO");
   if (!v(req.body)) {
     return res.status(422).json(new ErrorDTO(v.errors));
   }
-
-  const user = await db.manager.findOneBy(User, { id: decodedJWT.userId });
 
   // Update user
   db.manager.merge(User, user, req.body.user);
