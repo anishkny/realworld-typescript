@@ -2,8 +2,9 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build:only": "npm run clean && tsc",
-    "migration:generate": "npm run build:only && typeorm migration:generate -d ./dist/infra/db.js ./src/migrations/Migration",
-    "migration:run": "typeorm migration:run -d ./dist/infra/db.js",
+    "typeorm": "typeorm -d ./dist/infra/db.js",
+    "migration:generate": "npm run build:only && npm run typeorm migration:generate ./src/migrations/Migration",
+    "migration:run": "npm run typeorm migration:run",
     "schema:generate": "typescript-json-schema --required --noExtraProps ./src/dtos/input.ts '*' --out ./generated-schemas.json",
     "format:fix": "prettier --write .",
     "format:check": "prettier --check .",
