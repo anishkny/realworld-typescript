@@ -1895,6 +1895,52 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Malformed JSON",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"  pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Data is correct\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.message).to.exist;",
+									"  pm.expect(jsonData.message).to.include(\"Body Parser failed to parse request\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user\": {\n    \"username\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{APIURL}}/users",
+							"host": [
+								"{{APIURL}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
