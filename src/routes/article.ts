@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { JWTPayload } from "../infra/auth";
 import validator from "../infra/schema";
 import { ErrorDTO } from "../dtos/output";
 import db from "../infra/db";
@@ -11,14 +10,12 @@ const articleRouter = Router();
 
 // Create article
 articleRouter.post("/articles", async (req, res) => {
-  const decodedJWT: JWTPayload = res.locals.decodedJWT;
+  const author: User = res.locals.authenticatedUser;
 
   const v = validator("ArticleCreationDTO");
   if (!v(req.body)) {
     return res.status(422).json(new ErrorDTO(v.errors));
   }
-
-  const author = await db.manager.findOneBy(User, { id: decodedJWT.userId });
 
   // Add article
   const article = Article.fromArticleCreationDTO(
@@ -39,14 +36,9 @@ articleRouter.get("/articles/:slug", async (req, res) => {
     return res.status(404).json(new ErrorDTO("Article not found"));
   }
 
-  // Get user if authenticated
-  let user = null;
-  const decodedJWT: JWTPayload = res.locals.decodedJWT;
-  if (decodedJWT) {
-    user = await db.manager.findOneBy(User, { id: decodedJWT.userId });
-  }
+  const authenticatedUser: User = res.locals.authenticatedUser;
 
-  return res.status(200).json(await article.toArticleDTO(user));
+  return res.status(200).json(await article.toArticleDTO(authenticatedUser));
 });
 
 export default articleRouter;
