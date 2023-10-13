@@ -4,7 +4,7 @@ import { Article } from "./Article";
 
 @Entity()
 export class ArticleTag extends BaseEntity {
-  @ManyToOne(() => Article, (article) => article.id)
+  @ManyToOne(() => Article, (article) => article.id, { onDelete: "CASCADE" })
   article: Article;
 
   @Column()

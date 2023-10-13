@@ -69,4 +69,25 @@ articleRouter.put("/articles/:slug", async (req, res) => {
   return res.status(200).json(await article.toArticleDTO());
 });
 
+// Delete article
+articleRouter.delete("/articles/:slug", async (req, res) => {
+  const article = await db.manager.findOneBy(Article, {
+    slug: req.params.slug,
+  });
+  if (!article) {
+    return res.status(404).json(new ErrorDTO("Article not found"));
+  }
+
+  // Check if user is the author
+  const authenticatedUser: User = res.locals.authenticatedUser;
+  if (article.author.id !== authenticatedUser.id) {
+    return res.status(403).json(new ErrorDTO("Forbidden"));
+  }
+
+  // Delete article
+  await db.manager.remove(article);
+
+  return res.status(200).send();
+});
+
 export default articleRouter;
