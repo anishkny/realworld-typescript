@@ -41,13 +41,14 @@ export class Article extends BaseEntity {
     article.setSlug();
     article.author = author;
 
-    // Add tags
-    article.tags = articleCreationDTO.article.tagList.map((tag) => {
-      const articleTag = new ArticleTag();
-      articleTag.article = article;
-      articleTag.tag = tag;
-      return articleTag;
-    });
+    // Add tags if specified
+    article.tags =
+      articleCreationDTO.article.tagList?.map((tag) => {
+        const articleTag = new ArticleTag();
+        articleTag.article = article;
+        articleTag.tag = tag;
+        return articleTag;
+      }) ?? [];
 
     return article;
   }
@@ -63,7 +64,7 @@ export class Article extends BaseEntity {
         title: this.title,
         description: this.description,
         body: this.body,
-        tagList: this.tags.map((articleTag) => articleTag.tag),
+        tagList: this.tags?.map((articleTag) => articleTag.tag),
         createdAt: this.createdAt.toISOString(),
         updatedAt: this.updatedAt.toISOString(),
         favorited: false,

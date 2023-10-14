@@ -3,7 +3,8 @@ export type DTOTypes =
   | "UserLoginDTO"
   | "UserUpdateDTO"
   | "ArticleCreationDTO"
-  | "ArticleUpdateDTO";
+  | "ArticleUpdateDTO"
+  | "CommentCreationDTO";
 
 export interface UserRegistrationDTO {
   user: {
@@ -48,5 +49,11 @@ export interface ArticleUpdateDTO {
     title?: string;
     description?: string;
     body?: string;
+  };
+}
+
+export interface CommentCreationDTO {
+  comment: {
+    body: string;
   };
 }
