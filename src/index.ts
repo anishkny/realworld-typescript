@@ -28,6 +28,11 @@ function main() {
 
   app.use("/api", router);
 
+  // Not found handler
+  app.use((_req, res) => {
+    res.status(404).send("Not found");
+  });
+
   // Error handler
   app.use((err, _req, res, _next) => {
     console.log(err);

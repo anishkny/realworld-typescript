@@ -55,3 +55,18 @@ export interface ArticleDTO {
     };
   };
 }
+
+export interface CommentDTO {
+  comment: {
+    id: number;
+    createdAt: string;
+    updatedAt: string;
+    body: string;
+    author: {
+      username: string;
+      bio: string;
+      image: string;
+      following: boolean;
+    };
+  };
+}
