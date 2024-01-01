@@ -25,7 +25,7 @@
     "@typescript-eslint/parser": "^6.15.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
-    "newman": "^6.0.0",
+    "newman": "^6.1.0",
     "nyc": "^15.1.0",
     "prettier": "^3.1.1",
     "start-server-and-test": "^2.0.3",
