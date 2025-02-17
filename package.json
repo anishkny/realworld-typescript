@@ -23,7 +23,7 @@
     "@types/node": "^22.13.1",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^6.21.0",
-    "eslint": "^8.57.1",
+    "eslint": "^9.20.1",
     "eslint-config-prettier": "^10.0.1",
     "newman": "^6.2.1",
     "nyc": "^17.1.0",
