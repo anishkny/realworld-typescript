@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "ajv": "^8.17.1",
-    "bcryptjs": "^2.4.3",
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv-extended": "^2.9.0",
     "express": "^4.21.2",
