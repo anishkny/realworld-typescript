@@ -52,7 +52,7 @@ export async function authenicateRequest(
     if (!user) return res.status(401).json(new ErrorDTO("Unauthorized"));
     res.locals.authenticatedUser = user;
     next();
-  } catch (err) {
+  } catch (_err) {
     return res.status(401).json(new ErrorDTO("Unauthorized"));
   }
 }
