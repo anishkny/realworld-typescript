@@ -37,4 +37,26 @@ commentRouter.post("/articles/:slug/comments", async (req, res) => {
   return res.status(200).json(await comment.toCommentDTO());
 });
 
+// Get comments
+commentRouter.get("/articles/:slug/comments", async (req, res) => {
+  // Find article
+  const article = await db.manager.findOneBy(Article, {
+    slug: req.params.slug,
+  });
+  if (!article) {
+    return res.status(404).json(new ErrorDTO("Article not found"));
+  }
+
+  // Get comments
+  const comments = await db.manager.find(Comment, {
+    where: { article: { id: article.id } },
+  });
+
+  const authenticatedUser: User = res.locals.authenticatedUser;
+
+  return res
+    .status(200)
+    .json(await Comment.toCommentsDTO(comments, authenticatedUser));
+});
+
 export default commentRouter;
