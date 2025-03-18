@@ -22,13 +22,13 @@ jobs:
       issues: write
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
       - name: Build and test
         run: |
           npm install
           npm run ci
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
       - name: Approve and merge Dependabot PR
         if: github.actor == 'dependabot[bot]' && github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main'
         env:
