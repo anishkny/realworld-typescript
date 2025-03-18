@@ -3,7 +3,7 @@ import { BaseEntity } from "./BaseEntity";
 import { User } from "./User";
 import { Article } from "./Article";
 import { CommentCreationDTO } from "../dtos/input";
-import { CommentDTO } from "../dtos/output";
+import { CommentDTO, CommentInnerDTO, CommentsDTO } from "../dtos/output";
 import { isFollowing } from "../queries/profile";
 
 @Entity()
@@ -14,7 +14,7 @@ export class Comment extends BaseEntity {
   @ManyToOne(() => Article, (article) => article.id, { onDelete: "CASCADE" })
   article: Article;
 
-  @ManyToOne(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.id, { eager: true })
   author: User;
 
   static fromCommentCreationDTO(
@@ -29,25 +29,39 @@ export class Comment extends BaseEntity {
     return newComment;
   }
 
-  public async toCommentDTO(asUser?: User): Promise<CommentDTO> {
+  public async toCommentInnerDTO(asUser?: User): Promise<CommentInnerDTO> {
     let following = false;
-    // istanbul ignore next: TODO: remove this after adding get comments
     if (asUser) {
       following = await isFollowing(asUser, this.author);
     }
     return {
-      comment: {
-        id: this.id,
-        createdAt: this.createdAt.toISOString(),
-        updatedAt: this.updatedAt.toISOString(),
-        body: this.body,
-        author: {
-          username: this.author.username,
-          bio: this.author.bio,
-          image: this.author.image,
-          following,
-        },
+      id: this.id,
+      createdAt: this.createdAt.toISOString(),
+      updatedAt: this.updatedAt.toISOString(),
+      body: this.body,
+      author: {
+        username: this.author.username,
+        bio: this.author.bio,
+        image: this.author.image,
+        following,
       },
+    };
+  }
+
+  public async toCommentDTO(): Promise<CommentDTO> {
+    return {
+      comment: await this.toCommentInnerDTO(),
+    };
+  }
+
+  public static async toCommentsDTO(
+    comments: Comment[],
+    asUser?: User,
+  ): Promise<CommentsDTO> {
+    return {
+      comments: await Promise.all(
+        comments.map((comment) => comment.toCommentInnerDTO(asUser)),
+      ),
     };
   }
 }

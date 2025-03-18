@@ -14,7 +14,9 @@
     "clean:coverage": "rm -rf coverage/ .nyc_output/ node_modules/.cache/nyc/",
     "start:only": "npm run clean:coverage && nyc node dist",
     "start": "npm run build && npm run migration:run && npm run start:only",
-    "test": "newman run ./api-tests.postman.json --bail",
+    "test:stress": "node --test ./test/stress.test.mjs",
+    "test:api": "newman run ./test/api-tests.postman.json --bail",
+    "test": "npm run test:api && npm run test:stress",
     "ci": "start-server-and-test 8000"
   },
   "devDependencies": {
@@ -23,6 +25,7 @@
     "@types/node": "^20.8.3",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
+    "axios": "^1.5.1",
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
     "newman": "^6.0.0",
