@@ -14,7 +14,8 @@ articleRouter.post("/articles", async (req, res) => {
 
   const v = validator("ArticleCreationDTO");
   if (!v(req.body)) {
-    return res.status(422).json(new ErrorDTO(v.errors));
+    res.status(422).json(new ErrorDTO(v.errors));
+    return;
   }
 
   // Add article
@@ -24,7 +25,7 @@ articleRouter.post("/articles", async (req, res) => {
   );
   await db.manager.save(article);
 
-  return res.status(200).json(await article.toArticleDTO());
+  res.status(200).json(await article.toArticleDTO());
 });
 
 // Get article
@@ -33,12 +34,13 @@ articleRouter.get("/articles/:slug", async (req, res) => {
     slug: req.params.slug,
   });
   if (!article) {
-    return res.status(404).json(new ErrorDTO("Article not found"));
+    res.status(404).json(new ErrorDTO("Article not found"));
+    return;
   }
 
   const authenticatedUser: User = res.locals.authenticatedUser;
 
-  return res.status(200).json(await article.toArticleDTO(authenticatedUser));
+  res.status(200).json(await article.toArticleDTO(authenticatedUser));
 });
 
 // Update article
@@ -47,18 +49,21 @@ articleRouter.put("/articles/:slug", async (req, res) => {
     slug: req.params.slug,
   });
   if (!article) {
-    return res.status(404).json(new ErrorDTO("Article not found"));
+    res.status(404).json(new ErrorDTO("Article not found"));
+    return;
   }
 
   const v = validator("ArticleUpdateDTO");
   if (!v(req.body)) {
-    return res.status(422).json(new ErrorDTO(v.errors));
+    res.status(422).json(new ErrorDTO(v.errors));
+    return;
   }
 
   // Check if user is the author
   const authenticatedUser: User = res.locals.authenticatedUser;
   if (article.author.id !== authenticatedUser.id) {
-    return res.status(403).json(new ErrorDTO("Forbidden"));
+    res.status(403).json(new ErrorDTO("Forbidden"));
+    return;
   }
 
   // Update article
@@ -66,7 +71,7 @@ articleRouter.put("/articles/:slug", async (req, res) => {
   article.setSlug();
   await db.manager.save(article);
 
-  return res.status(200).json(await article.toArticleDTO());
+  res.status(200).json(await article.toArticleDTO());
 });
 
 // Delete article
@@ -75,19 +80,21 @@ articleRouter.delete("/articles/:slug", async (req, res) => {
     slug: req.params.slug,
   });
   if (!article) {
-    return res.status(404).json(new ErrorDTO("Article not found"));
+    res.status(404).json(new ErrorDTO("Article not found"));
+    return;
   }
 
   // Check if user is the author
   const authenticatedUser: User = res.locals.authenticatedUser;
   if (article.author.id !== authenticatedUser.id) {
-    return res.status(403).json(new ErrorDTO("Forbidden"));
+    res.status(403).json(new ErrorDTO("Forbidden"));
+    return;
   }
 
   // Delete article
   await db.manager.remove(article);
 
-  return res.status(200).send();
+  res.status(200).send();
 });
 
 export default articleRouter;

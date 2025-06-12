@@ -17,7 +17,8 @@ profileRouter.get("/profiles/:username", async (req, res) => {
     where: { username: targetUsername },
   });
   if (!targetUser) {
-    return res.status(404).json(new ErrorDTO("User not found"));
+    res.status(404).json(new ErrorDTO("User not found"));
+    return;
   }
 
   // Check if following
@@ -26,7 +27,7 @@ profileRouter.get("/profiles/:username", async (req, res) => {
     following = await isFollowing(authenticatedUser, targetUser);
   }
 
-  return res.status(200).json(targetUser.toProfileDTO(following));
+  res.status(200).json(targetUser.toProfileDTO(following));
 });
 
 // Follow user
@@ -39,7 +40,8 @@ profileRouter.post("/profiles/:username/follow", async (req, res) => {
     where: { username: targetUsername },
   });
   if (!targetUser) {
-    return res.status(404).json(new ErrorDTO("User not found"));
+    res.status(404).json(new ErrorDTO("User not found"));
+    return;
   }
 
   // Follow user (if not already following)
@@ -52,7 +54,7 @@ profileRouter.post("/profiles/:username/follow", async (req, res) => {
     );
   }
 
-  return res.status(200).json(targetUser.toProfileDTO(true));
+  res.status(200).json(targetUser.toProfileDTO(true));
 });
 
 // Unfollow user
@@ -65,7 +67,8 @@ profileRouter.delete("/profiles/:username/follow", async (req, res) => {
     where: { username: targetUsername },
   });
   if (!targetUser) {
-    return res.status(404).json(new ErrorDTO("User not found"));
+    res.status(404).json(new ErrorDTO("User not found"));
+    return;
   }
 
   // Unfollow user
@@ -74,7 +77,7 @@ profileRouter.delete("/profiles/:username/follow", async (req, res) => {
     followed: { id: targetUser.id },
   });
 
-  return res.status(200).json(targetUser.toProfileDTO(false));
+  res.status(200).json(targetUser.toProfileDTO(false));
 });
 
 export default profileRouter;
