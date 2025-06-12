@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
 import { ErrorDTO } from "../dtos/output";
 import db from "./db";
 import { User } from "../entities/User";
@@ -16,11 +15,7 @@ export function verifyToken(token: string): JWTPayload {
   return jwt.verify(token, process.env.JWT_SECRET as string) as JWTPayload;
 }
 
-export async function authenicateRequest(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+export async function authenicateRequest(req, res, next) {
   const token = req.headers.authorization;
   res.locals.token = token;
 
@@ -52,7 +47,7 @@ export async function authenicateRequest(
     if (!user) return res.status(401).json(new ErrorDTO("Unauthorized"));
     res.locals.authenticatedUser = user;
     next();
-  } catch (err) {
+  } catch (_err) {
     return res.status(401).json(new ErrorDTO("Unauthorized"));
   }
 }

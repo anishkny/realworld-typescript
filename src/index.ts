@@ -1,7 +1,6 @@
 import "./infra/env";
 import "reflect-metadata";
 import express from "express";
-import "express-async-errors";
 import bodyParserErrorHandler from "express-body-parser-error-handler";
 import cors from "cors";
 
@@ -14,7 +13,8 @@ db.initialize().then(main).catch(console.error);
 function main() {
   const app = express();
   app.use(express.json());
-  app.use(bodyParserErrorHandler());
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  app.use(bodyParserErrorHandler() as any);
   app.use(cors());
 
   app.get("/", (req, res) => {

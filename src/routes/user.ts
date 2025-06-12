@@ -13,7 +13,8 @@ const userRouter = Router();
 userRouter.post("/users", async (req, res) => {
   const v = validator("UserRegistrationDTO");
   if (!v(req.body)) {
-    return res.status(422).json(new ErrorDTO(v.errors));
+    res.status(422).json(new ErrorDTO(v.errors));
+    return;
   }
 
   // Add user
@@ -22,14 +23,15 @@ userRouter.post("/users", async (req, res) => {
 
   // Return user
   const token = generateToken({ userId: user.id });
-  return res.status(200).json(user.toAuthenticatedUserDTO(token));
+  res.status(200).json(user.toAuthenticatedUserDTO(token));
 });
 
 // Login user
 userRouter.post("/users/login", async (req, res) => {
   const v = validator("UserLoginDTO");
   if (!v(req.body)) {
-    return res.status(422).json(new ErrorDTO(v.errors));
+    res.status(422).json(new ErrorDTO(v.errors));
+    return;
   }
 
   // Find user
@@ -37,24 +39,26 @@ userRouter.post("/users/login", async (req, res) => {
     where: { email: req.body.user.email },
   });
   if (!user) {
-    return res.status(404).json(new ErrorDTO("User not found"));
+    res.status(404).json(new ErrorDTO("User not found"));
+    return;
   }
 
   // Check password
   if (!comparePassword(req.body.user.password, user.passwordHash)) {
-    return res.status(401).json(new ErrorDTO("Invalid password"));
+    res.status(401).json(new ErrorDTO("Invalid password"));
+    return;
   }
 
   // Return user
   const token = generateToken({ userId: user.id });
-  return res.status(200).json(user.toAuthenticatedUserDTO(token));
+  res.status(200).json(user.toAuthenticatedUserDTO(token));
 });
 
 // Get user
 userRouter.get("/user", async (_req, res) => {
   const user: User = res.locals.authenticatedUser;
   const token: string = res.locals.token;
-  return res.status(200).json(user.toAuthenticatedUserDTO(token));
+  res.status(200).json(user.toAuthenticatedUserDTO(token));
 });
 
 // Update user
@@ -64,7 +68,8 @@ userRouter.put("/user", async (req, res) => {
 
   const v = validator("UserUpdateDTO");
   if (!v(req.body)) {
-    return res.status(422).json(new ErrorDTO(v.errors));
+    res.status(422).json(new ErrorDTO(v.errors));
+    return;
   }
 
   // Update user
@@ -72,7 +77,7 @@ userRouter.put("/user", async (req, res) => {
   await db.manager.save(user);
 
   // Return user
-  return res.status(200).json(user.toAuthenticatedUserDTO(token));
+  res.status(200).json(user.toAuthenticatedUserDTO(token));
 });
 
 export default userRouter;

@@ -15,7 +15,8 @@ commentRouter.post("/articles/:slug/comments", async (req, res) => {
 
   const v = validator("CommentCreationDTO");
   if (!v(req.body)) {
-    return res.status(422).json(new ErrorDTO(v.errors));
+    res.status(422).json(new ErrorDTO(v.errors));
+    return;
   }
 
   // Find article
@@ -23,7 +24,8 @@ commentRouter.post("/articles/:slug/comments", async (req, res) => {
     slug: req.params.slug,
   });
   if (!article) {
-    return res.status(404).json(new ErrorDTO("Article not found"));
+    res.status(404).json(new ErrorDTO("Article not found"));
+    return;
   }
 
   // Add comment
@@ -34,7 +36,7 @@ commentRouter.post("/articles/:slug/comments", async (req, res) => {
   );
   await db.manager.save(comment);
 
-  return res.status(200).json(await comment.toCommentDTO());
+  res.status(200).json(await comment.toCommentDTO());
 });
 
 export default commentRouter;
