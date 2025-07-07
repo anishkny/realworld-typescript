@@ -36,7 +36,7 @@
     "ajv": "^8.17.1",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
-    "dotenv": "^17.0.0",
+    "dotenv": "^17.0.1",
     "dotenv-extended": "^2.9.0",
     "express": "^5.1.0",
     "express-body-parser-error-handler": "^1.0.9",
