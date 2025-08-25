@@ -29,7 +29,7 @@
     "prettier": "^3.6.2",
     "start-server-and-test": "^2.0.13",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.39.1",
+    "typescript-eslint": "^8.40.0",
     "typescript-json-schema": "^0.65.1"
   },
   "dependencies": {
