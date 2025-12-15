@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
-    "@types/express": "^5.0.5",
+    "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.1",
     "eslint": "^9.39.2",
@@ -38,7 +38,7 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "dotenv-extended": "^2.9.0",
-    "express": "^5.1.0",
+    "express": "^5.2.1",
     "express-body-parser-error-handler": "^1.0.9",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.16.3",
