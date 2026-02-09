@@ -21,7 +21,7 @@
     "@eslint/js": "^9.39.2",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^25.2.0",
+    "@types/node": "^25.2.2",
     "eslint": "^9.39.2",
     "globals": "^17.1.0",
     "newman": "^6.2.2",
