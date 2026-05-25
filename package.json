@@ -41,7 +41,7 @@
     "express": "^5.2.1",
     "express-body-parser-error-handler": "^1.0.9",
     "jsonwebtoken": "^9.0.3",
-    "pg": "^8.20.0",
+    "pg": "^8.21.0",
     "reflect-metadata": "^0.2.2",
     "slugify": "^1.6.8",
     "typeorm": "^0.3.28"
