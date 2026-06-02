@@ -44,6 +44,6 @@
     "pg": "^8.21.0",
     "reflect-metadata": "^0.2.2",
     "slugify": "^1.6.8",
-    "typeorm": "^0.3.28"
+    "typeorm": "^1.0.0"
   }
 }
